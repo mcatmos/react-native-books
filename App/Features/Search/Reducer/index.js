@@ -1,4 +1,5 @@
 import Immutable from 'seamless-immutable'
+import _ from 'lodash'
 import {
   REQUEST_SEARCH,
   SUCCESS_SEARCH,
@@ -6,32 +7,37 @@ import {
 } from '../Actions/'
 
 const INITIAL_STATE = Immutable({
-  fetching: false,
-  results: [],
+  isFetching: false,
+  results: null,
   page: 0,
   error: false
 })
 
-const books = (state = INITIAL_STATE, action) => {
+const search = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case REQUEST_SEARCH:
       return {
         ...state,
-        fetching: true,
+        isFetching: true,
         error: false
       }
     break
     case SUCCESS_SEARCH: 
+      const { results } = action.payload
+      const mapBooks = _.mapKeys(results, 'key')
+      console.log(mapBooks)
+      const bookIds = Object.keys(mapBooks)
+      console.log(bookIds)
       return {
         ...state,
-        fetching: false,
-        results: action.payload.results
+        isFetching: false,
+        results: _.union(bookIds, state.results)
       }
     break
     case ERROR_SEARCH:
       return {
         ...state,
-        fetching: false,
+        isFetching: false,
         error: true
       }
     default:
@@ -39,4 +45,4 @@ const books = (state = INITIAL_STATE, action) => {
   }
 }
 
-export default books
+export default search

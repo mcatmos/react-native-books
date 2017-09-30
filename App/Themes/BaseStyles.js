@@ -33,17 +33,19 @@ const baseStyles = StyleSheet.create({
     color: colors.white,
     fontFamily: 'helvetica'
   },
-  topContainer: {
-    backgroundColor: colors.cream,
-    paddingTop: 50,
-    borderBottomWidth: 5,
-    borderBottomColor: colors.white
-  },
   titleCard: {
     fontSize: 25,
     fontWeight: 'bold',
     color: colors.grey,
-    fontFamily: 'helvetica'
+    fontFamily: 'helvetica',
+    flex: 1
+  },
+  subtitle: {
+    fontSize: 20,
+    fontWeight: '100',
+    color: colors.grey,
+    fontFamily: 'helvetica',
+    marginVertical: 10
   }
 })
 

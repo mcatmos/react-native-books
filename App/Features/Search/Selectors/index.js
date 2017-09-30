@@ -1,3 +1,10 @@
 export const getBooks = (state) => {
-  return state.books ? state.books.results : null
+  const { books, search } = state
+  
+  if (search.results) {
+    return search.results.map(id => {
+      return books[id]
+    })
+  }
+  return null
 }

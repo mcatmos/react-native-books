@@ -4,18 +4,27 @@ import {
   View,
   TouchableOpacity,
   TextInput,
-  FlatList
+  FlatList,
+  ActivityIndicator,
+  Animated
 } from 'react-native'
 import { connect } from 'react-redux'
-import Icon from 'react-native-vector-icons/Octicons'
-import { BaseStyles } from '../../Themes/'
+import { BaseStyles, Colors } from '../../Themes/'
 import {
   requestSearch
 } from './Actions/'
+
+import {
+  addBook
+} from '../MyBooks/Actions'
 import {
   getBooks
 } from './Selectors/'
 import { Actions as NavigatorActions } from 'react-native-router-flux'
+
+import ListCardLarge from '../../Components/ListCardLarge'
+import TopHeader from '../../Components/TopHeader'
+import Placeholder from '../../Components/Placeholder'
 
 class SearchScreen extends Component {
   constructor(props) {
@@ -26,55 +35,71 @@ class SearchScreen extends Component {
     }
   }
 
-  _renderRow({item}) {
+  _renderCell({item}) {
     return (
-      <View style={{
-        backgroundColor: 'white', 
-        margin: 5, 
-        borderRadius: 10,
-        padding: 10,
-        paddingTop: 30
-        }}>
-        <Text style={BaseStyles.titleCard}>{item.title}</Text>
-        <Text>{item.author_name}</Text>
-        <Text>{item.publisher}</Text>
-        <Text>{item.first_publish_year}</Text>
+      <ListCardLarge 
+        addBook={(book) => this.props.addBook(book)}
+        data={item} 
+        showIcon={true}
+      />
+    )
+  }
+
+  _renderBody() {
+    const { isFetching, books } = this.props
+    console.log(books)
+    if (isFetching) {
+      return (
+      <View style={{flex: 1, justifyContent: 'center'}}>
+        <ActivityIndicator color={'white'}/>
       </View>
+      )
+    }
+
+    if (!books) {
+      return (
+        <Placeholder />
+      )
+    }
+
+    return (
+      books.length > 0 && 
+        <FlatList
+          style={{padding: 5}}
+          data={this.props.books}
+          renderItem={(item) => this._renderCell(item)}
+        />
     )
   }
 
   render() {
     const { query } = this.state
-    const { error, books, requestSearch } = this.props
-    
+    const { error, requestSearch } = this.props
+
     return (
       <View style={BaseStyles.container}>
-        <View style={BaseStyles.topContainer}>
-          <Text style={BaseStyles.mainTitle}>Book Search</Text>
-          <TextInput 
-            placeholder={'Type here..'}
-            placeholderTextColor={'grey'}
-            style={BaseStyles.inputLarge}
-            onChangeText={(query) => this.setState({query})}
-            onSubmitEditing={() => requestSearch(query)}
-          />
-        </View>
-        {books.length > 0 && 
-          <FlatList
-            style={{padding: 5}}
-            data={this.props.books}
-            renderItem={(item) => this._renderRow(item)}
-          />
-        }
+        <TopHeader 
+          title={'Book Search'}
+          placeholder={'Type here...'}
+          leftIcon={true}
+          getText={(query) => this.setState({query})}
+          action={() => requestSearch(query)}
+          iconName={'book'}
+          iconAction={() => NavigatorActions.MyBooks()}
+        />
+        {this._renderBody()}
       </View>
     )
   }
 }
 
 const mapStateToProps = (state) => ({
-  books: getBooks(state)
+  books: getBooks(state),
+  isFetching: state.books.isFetching,
+
 })
 
 export default connect(mapStateToProps, { 
-  requestSearch
+  requestSearch,
+  addBook
 })(SearchScreen)

@@ -6,7 +6,8 @@ import {
   Stack
 } from 'react-native-router-flux'
 import {
-  Search
+  Search,
+  MyBooks
 } from '../Features/'
 import { Colors } from '../Themes/'
 import { Provider } from 'react-redux'
@@ -30,7 +31,13 @@ class Root extends Component {
               initial={true}
               component={Search}
               hideNavBar={true}
-              title={'Poolie Coolie'}
+            />
+            <Scene
+              navigationBarStyle={{backgroundColor: Colors.grey}}
+              titleStyle={{color: Colors.white}}
+              key={'MyBooks'}
+              component={MyBooks}
+              hideNavBar={true}
             />
           </Stack>
         </Router>
